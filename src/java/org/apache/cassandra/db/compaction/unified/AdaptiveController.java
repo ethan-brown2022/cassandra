@@ -314,10 +314,20 @@ public class AdaptiveController extends Controller
         StringBuilder str = new StringBuilder(100);
         str.append("Adaptive compaction controller ");
 
+        /* this is where W is updated if necessary */
         if (W != candW && (cost - candCost) >= threshold * cost)
         {
-            str.append("updated ").append(W).append(" -> ").append(candW);
-            this.W = candW;
+            /* incrementing W by 1 instead of jumping straight to candW */
+            if (candW > W)
+            {
+                str.append("updated ").append(W).append(" -> ").append(W + 1);
+                this.W = W + 1;
+            }
+            else
+            {
+                str.append("updated ").append(W).append(" -> ").append(W - 1);
+                this.W = W - 1;
+            }
         }
         else
         {
