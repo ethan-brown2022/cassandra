@@ -316,7 +316,27 @@ public class AdaptiveController extends Controller
 
         if (W != candW && (cost - candCost) >= threshold * cost)
         {
-            str.append("updated ").append(W).append(" -> ").append(candW);
+            //if candW is greater than W by more than 2, add 2 to W
+            if (W <= candW - 2)
+            {
+                str.append("updated ").append(W).append(" -> ").append(W + 2);
+                this.W = W + 2;
+            }
+            //if candW is less than W by more than 2, subtract 2 from W
+            else if (W >= candW + 2)
+            {
+                str.append("updated ").append(W).append(" -> ").append(W - 2);
+                this.W = W - 2;
+            }
+            //if candW is within 2 of W, set W to candW
+            else
+            {
+                str.append("updated ").append(W).append(" -> ").append(candW);
+                this.W = candW;
+            }
+
+
+
             this.W = candW;
         }
         else
