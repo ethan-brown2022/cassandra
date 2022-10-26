@@ -334,10 +334,6 @@ public class AdaptiveController extends Controller
                 str.append("updated ").append(W).append(" -> ").append(candW);
                 this.W = candW;
             }
-
-
-
-            this.W = candW;
         }
         else
         {
