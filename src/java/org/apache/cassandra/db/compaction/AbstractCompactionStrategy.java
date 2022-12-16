@@ -375,4 +375,9 @@ abstract class AbstractCompactionStrategy implements CompactionStrategy
     {
         return true;
     }
+
+    public void periodicReport(){
+        CompactionLogger logger = this.getCompactionLogger();
+        logger.statistics(this, "periodic", backgroundCompactions.getStatistics(this));
+    }
 }
