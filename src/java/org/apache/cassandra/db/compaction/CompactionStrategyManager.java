@@ -1106,6 +1106,15 @@ public class CompactionStrategyManager implements CompactionStrategyContainer
         return supportsEarlyOpen;
     }
 
+    @Override
+    public void periodicReport()
+    {
+        CompactionLogger logger = this.getCompactionLogger();
+        BackgroundCompactions backgroundCompactions = new BackgroundCompactions(realm);
+        if (logger != null && logger.enabled())
+            logger.statistics(this, "periodic", backgroundCompactions.getStatistics(this));
+    }
+
     public ReentrantReadWriteLock.WriteLock getWriteLock()
     {
         return this.writeLock;
