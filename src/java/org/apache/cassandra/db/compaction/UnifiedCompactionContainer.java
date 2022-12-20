@@ -342,6 +342,15 @@ public class UnifiedCompactionContainer implements CompactionStrategyContainer
         return strategy.supportsEarlyOpen();
     }
 
+    @Override
+    public void periodicReport()
+    {
+        CompactionLogger logger = this.getCompactionLogger();
+        BackgroundCompactions backgroundCompactions = getBackgroundCompactions();
+        if (logger != null && logger.enabled())
+            logger.statistics(this, "periodic", backgroundCompactions.getStatistics(this));
+    }
+
     BackgroundCompactions getBackgroundCompactions()
     {
         return strategy.backgroundCompactions;
