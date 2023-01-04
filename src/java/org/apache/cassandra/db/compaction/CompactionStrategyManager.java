@@ -315,7 +315,7 @@ public class CompactionStrategyManager implements CompactionStrategyContainer
             writeLock.unlock();
         }
 
-        if (repaired.first().getOptions().isLogAll())
+        if (repaired.first().getOptions().isLogEnabled())
             compactionLogger.enable();
     }
 
