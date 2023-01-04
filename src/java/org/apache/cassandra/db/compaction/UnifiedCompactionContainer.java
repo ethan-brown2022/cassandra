@@ -67,7 +67,7 @@ public class UnifiedCompactionContainer implements CompactionStrategyContainer
 
         factory.getCompactionLogger().strategyCreated(this.strategy);
 
-        if (this.strategy.getOptions().isLogAll())
+        if (this.strategy.getOptions().isLogEnabled())
             factory.getCompactionLogger().enable();
         else
             factory.getCompactionLogger().disable();
