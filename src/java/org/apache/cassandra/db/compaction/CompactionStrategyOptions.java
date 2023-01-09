@@ -103,7 +103,6 @@ public class CompactionStrategyOptions
         tombstoneThreshold = Float.parseFloat(getOption(TOMBSTONE_THRESHOLD_OPTION, useDefault, DEFAULT_TOMBSTONE_THRESHOLD));
         tombstoneCompactionInterval = Long.parseLong(getOption(TOMBSTONE_COMPACTION_INTERVAL_OPTION, useDefault, DEFAULT_TOMBSTONE_COMPACTION_INTERVAL));
         uncheckedTombstoneCompaction = Boolean.parseBoolean(getOption(UNCHECKED_TOMBSTONE_COMPACTION_OPTION, useDefault, DEFAULT_UNCHECKED_TOMBSTONE_COMPACTION_OPTION));
-        //logAll = Boolean.parseBoolean(getOption(LOG_ALL_OPTION, useDefault, DEFAULT_LOG_ALL_OPTION));
         logAll = getOption(LOG_ALL_OPTION, useDefault, DEFAULT_LOG_ALL_OPTION);
         logPeriodMinutes = Integer.parseInt(getOption(LOG_PERIOD_MINUTES_OPTION, useDefault, DEFAULT_LOG_PERIOD_MINUTES_OPTION));
     }
@@ -407,5 +406,16 @@ public class CompactionStrategyOptions
         if (logAll.equalsIgnoreCase("all") || logAll.equalsIgnoreCase("events_only"))
             return true;
         return false;
+    }
+
+    public static boolean isLogAll()
+    {
+
+        return false;
+    }
+
+    public static int getLogPeriodMinutes()
+    {
+        return 1;
     }
 }
