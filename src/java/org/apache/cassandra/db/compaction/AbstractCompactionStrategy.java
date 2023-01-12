@@ -55,6 +55,8 @@ abstract class AbstractCompactionStrategy implements CompactionStrategy
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractCompactionStrategy.class);
 
+    private static int logCount = 0;
+
     protected final CompactionStrategyOptions options;
     /** The column family store should only be used when creating writers. However it is currently also used
      * by legacy strategies and compaction tasks.
@@ -377,8 +379,14 @@ abstract class AbstractCompactionStrategy implements CompactionStrategy
     }
 
     public void periodicReport(){
+        logCount++;
         CompactionLogger logger = this.getCompactionLogger();
-        if (logger != null && logger.enabled())
+        int interval = options.getLogPeriodMinutes();
+        boolean logAll = options.isLogAll();
+        if (logger != null && logger.enabled() && logAll && logCount % interval == 0)
+        {
+            logCount = 0;
             logger.statistics(this, "periodic", backgroundCompactions.getStatistics(this));
+        }
     }
 }
