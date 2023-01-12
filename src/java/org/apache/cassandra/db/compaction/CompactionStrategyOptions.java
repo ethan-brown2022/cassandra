@@ -408,14 +408,13 @@ public class CompactionStrategyOptions
         return false;
     }
 
-    public static boolean isLogAll()
+    public boolean isLogAll()
     {
-
-        return false;
+        return logAll.equalsIgnoreCase("all");
     }
 
-    public static int getLogPeriodMinutes()
+    public int getLogPeriodMinutes()
     {
-        return 1;
+        return logPeriodMinutes;
     }
 }

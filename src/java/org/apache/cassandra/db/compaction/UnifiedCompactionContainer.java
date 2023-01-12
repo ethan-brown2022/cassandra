@@ -43,6 +43,7 @@ import org.apache.cassandra.schema.CompactionParams;
 
 public class UnifiedCompactionContainer implements CompactionStrategyContainer
 {
+    private static int logCount = 0;
     private final CompactionStrategyFactory factory;
     private final CompactionParams params;
     private final CompactionParams metadataParams;
@@ -342,10 +343,17 @@ public class UnifiedCompactionContainer implements CompactionStrategyContainer
     @Override
     public void periodicReport()
     {
+        logCount++;
         CompactionLogger logger = this.getCompactionLogger();
         BackgroundCompactions backgroundCompactions = getBackgroundCompactions();
-        if (logger != null && logger.enabled())
+        int interval = strategy.options.getLogPeriodMinutes();
+        boolean logAll = strategy.options.isLogAll();
+        if (logger != null && logger.enabled() && logAll && logCount % interval == 0)
+        {
+            logCount = 0;
             logger.statistics(this, "periodic", backgroundCompactions.getStatistics(this));
+        }
+
     }
 
     BackgroundCompactions getBackgroundCompactions()

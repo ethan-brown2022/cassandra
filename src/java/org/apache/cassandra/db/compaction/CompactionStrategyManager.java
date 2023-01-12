@@ -90,6 +90,7 @@ import static org.apache.cassandra.db.compaction.AbstractStrategyHolder.GroupedS
 public class CompactionStrategyManager implements CompactionStrategyContainer
 {
     private static final Logger logger = LoggerFactory.getLogger(CompactionStrategyManager.class);
+    private static int logCount = 0;
     public final CompactionLogger compactionLogger;
     private final CompactionRealm realm;
     private final boolean partitionSSTablesByTokenRange;
@@ -1106,10 +1107,16 @@ public class CompactionStrategyManager implements CompactionStrategyContainer
     @Override
     public void periodicReport()
     {
+        logCount++;
         CompactionLogger logger = this.getCompactionLogger();
         BackgroundCompactions backgroundCompactions = new BackgroundCompactions(realm);
-        if (logger != null && logger.enabled())
+        int interval = repaired.first().getOptions().getLogPeriodMinutes();
+        boolean logAll = repaired.first().getOptions().isLogAll();
+        if (logger != null && logger.enabled() && logAll && logCount % interval == 0)
+        {
+            logCount = 0;
             logger.statistics(this, "periodic", backgroundCompactions.getStatistics(this));
+        }
     }
 
     public ReentrantReadWriteLock.WriteLock getWriteLock()
