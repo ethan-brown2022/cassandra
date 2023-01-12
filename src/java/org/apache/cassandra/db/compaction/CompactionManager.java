@@ -165,20 +165,17 @@ public class CompactionManager implements CompactionManagerMBean
 
         MBeanWrapper.instance.registerMBean(instance, MBEAN_OBJECT_NAME);
 
-        //only want to schedule periodic reports if periodic reports are enabled ('log_all': 'all')
-        if (CompactionStrategyOptions.isLogAll())
-        {
-            ScheduledExecutors.scheduledTasks.scheduleAtFixedRate(() -> {
-                for (String keyspace : Schema.instance.getKeyspaces())
+        /*Schedule periodic reports to run every minute*/
+        ScheduledExecutors.scheduledTasks.scheduleAtFixedRate(() -> {
+            for (String keyspace : Schema.instance.getKeyspaces())
+            {
+                for ( ColumnFamilyStore cfs : Schema.instance.getKeyspaceInstance(keyspace).getColumnFamilyStores())
                 {
-                    for ( ColumnFamilyStore cfs : Schema.instance.getKeyspaceInstance(keyspace).getColumnFamilyStores())
-                    {
-                        CompactionStrategy strat = cfs.getCompactionStrategy();
-                        strat.periodicReport();
-                    }
+                    CompactionStrategy strat = cfs.getCompactionStrategy();
+                    strat.periodicReport();
                 }
-            }, 1, CompactionStrategyOptions.getLogPeriodMinutes(), TimeUnit.MINUTES);
-        }
+            }
+        }, 1, 1, TimeUnit.MINUTES);
     }
 
     private final CompactionExecutor executor = new CompactionExecutor();
