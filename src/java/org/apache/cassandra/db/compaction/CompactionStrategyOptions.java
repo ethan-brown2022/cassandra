@@ -55,7 +55,8 @@ public class CompactionStrategyOptions
     // minimum interval needed to perform tombstone removal compaction in seconds, default 86400 or 1 day.
     public static final String DEFAULT_TOMBSTONE_COMPACTION_INTERVAL = "86400";
     public static final String DEFAULT_UNCHECKED_TOMBSTONE_COMPACTION_OPTION = "false";
-    public static final String DEFAULT_LOG_ALL_OPTION = System.getProperty("default.compaction.logs", "none");
+    public static final String DEFAULT_LOG_ALL_OPTION = System.getProperty("default.compaction.logs", "false");
+    public static final String DEFAULT_PERIODIC_LOG_ALL_OPTION = System.getProperty("default.compaction.logs", "none");
     public static final String DEFAULT_LOG_PERIOD_MINUTES_OPTION = System.getProperty("default.compaction.log_minutes", "1");
 
     public static final String TOMBSTONE_THRESHOLD_OPTION = "tombstone_threshold";
@@ -63,6 +64,7 @@ public class CompactionStrategyOptions
     // disable range overlap check when deciding if an SSTable is candidate for tombstone compaction (CASSANDRA-6563)
     public static final String UNCHECKED_TOMBSTONE_COMPACTION_OPTION = "unchecked_tombstone_compaction";
     public static final String LOG_ALL_OPTION = "log_all";
+    public static final String PERIODIC_LOG_ALL_OPTION = "log";
     public static final String LOG_PERIOD_MINUTES_OPTION = "log_period_minutes";
     public static final String COMPACTION_ENABLED = "enabled";
 
@@ -72,7 +74,8 @@ public class CompactionStrategyOptions
     private final long tombstoneCompactionInterval;
     private final boolean uncheckedTombstoneCompaction;
     private boolean disableTombstoneCompactions = false;
-    private final String logAll;
+    private final boolean logAll;
+    private final String periodicLogAll;
     private final int logPeriodMinutes;
 
     public CompactionStrategyOptions(Class<? extends CompactionStrategy> klass, Map<String, String> options, boolean throwOnInvalidOption)
@@ -103,7 +106,8 @@ public class CompactionStrategyOptions
         tombstoneThreshold = Float.parseFloat(getOption(TOMBSTONE_THRESHOLD_OPTION, useDefault, DEFAULT_TOMBSTONE_THRESHOLD));
         tombstoneCompactionInterval = Long.parseLong(getOption(TOMBSTONE_COMPACTION_INTERVAL_OPTION, useDefault, DEFAULT_TOMBSTONE_COMPACTION_INTERVAL));
         uncheckedTombstoneCompaction = Boolean.parseBoolean(getOption(UNCHECKED_TOMBSTONE_COMPACTION_OPTION, useDefault, DEFAULT_UNCHECKED_TOMBSTONE_COMPACTION_OPTION));
-        logAll = getOption(LOG_ALL_OPTION, useDefault, DEFAULT_LOG_ALL_OPTION);
+        logAll = Boolean.parseBoolean(getOption(LOG_ALL_OPTION, useDefault, DEFAULT_LOG_ALL_OPTION));
+        periodicLogAll = getOption(PERIODIC_LOG_ALL_OPTION, useDefault, DEFAULT_PERIODIC_LOG_ALL_OPTION);
         logPeriodMinutes = Integer.parseInt(getOption(LOG_PERIOD_MINUTES_OPTION, useDefault, DEFAULT_LOG_PERIOD_MINUTES_OPTION));
     }
 
@@ -306,9 +310,15 @@ public class CompactionStrategyOptions
         }
 
         String logAll = options.get(LOG_ALL_OPTION);
-        if (logAll != null && !logAll.equalsIgnoreCase("all") && !logAll.equalsIgnoreCase("events_only") && !logAll.equalsIgnoreCase("none"))
+        if (logAll != null && !logAll.equalsIgnoreCase("true") && !logAll.equalsIgnoreCase("false"))
         {
-            throw new ConfigurationException(String.format("'%s' should either be 'all' or 'events_only' or 'none', not %s", LOG_ALL_OPTION, logAll));
+            throw new ConfigurationException(String.format("'%s' should either be 'true' or 'false', not %s", LOG_ALL_OPTION, logAll));
+        }
+
+        String periodicLogAll = options.get(PERIODIC_LOG_ALL_OPTION);
+        if (periodicLogAll != null && !periodicLogAll.equalsIgnoreCase("all") && !periodicLogAll.equalsIgnoreCase("events_only") && !periodicLogAll.equalsIgnoreCase("none"))
+        {
+            throw new ConfigurationException(String.format("'%s' should either be 'all' or 'events_only' or 'none', not %s", PERIODIC_LOG_ALL_OPTION, periodicLogAll));
         }
 
         String logPeriodMinutes = options.get(LOG_PERIOD_MINUTES_OPTION);
@@ -339,6 +349,7 @@ public class CompactionStrategyOptions
         uncheckedOptions.remove(TOMBSTONE_COMPACTION_INTERVAL_OPTION);
         uncheckedOptions.remove(UNCHECKED_TOMBSTONE_COMPACTION_OPTION);
         uncheckedOptions.remove(LOG_ALL_OPTION);
+        uncheckedOptions.remove(PERIODIC_LOG_ALL_OPTION);
         uncheckedOptions.remove(LOG_PERIOD_MINUTES_OPTION);
         uncheckedOptions.remove(COMPACTION_ENABLED);
         uncheckedOptions.remove(ONLY_PURGE_REPAIRED_TOMBSTONES);
@@ -403,14 +414,14 @@ public class CompactionStrategyOptions
 
     public boolean isLogEnabled()
     {
-        if (logAll.equalsIgnoreCase("all") || logAll.equalsIgnoreCase("events_only"))
+        if (logAll || periodicLogAll.equalsIgnoreCase("all") || periodicLogAll.equalsIgnoreCase("events_only"))
             return true;
         return false;
     }
 
     public boolean isLogAll()
     {
-        return logAll.equalsIgnoreCase("all");
+        return periodicLogAll.equalsIgnoreCase("all");
     }
 
     public int getLogPeriodMinutes()
