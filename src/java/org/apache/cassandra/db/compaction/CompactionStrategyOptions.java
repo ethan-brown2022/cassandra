@@ -356,7 +356,7 @@ public class CompactionStrategyOptions
             try
             {
                 double multiplier = Double.parseDouble(readMultiplier);
-                if (!(multiplier > 0) && !(multiplier <= 1))
+                if (!(multiplier > 0 && multiplier <= 1))
                 {
                     throw new ConfigurationException(String.format("%s must be between 0 and 1, but was %d", READ_MULTIPLIER_OPTION, multiplier));
                 }
@@ -373,7 +373,7 @@ public class CompactionStrategyOptions
             try
             {
                 double multiplier = Double.parseDouble(writeMultiplier);
-                if (!(multiplier > 0) && !(multiplier <= 1))
+                if (!(multiplier > 0 && multiplier <= 1))
                 {
                     throw new ConfigurationException(String.format("%s must be between 0 and 1, but was %d", WRITE_MULTIPLIER_OPTION, multiplier));
                 }
