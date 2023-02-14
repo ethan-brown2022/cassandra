@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.apache.cassandra.db.compaction.CompactionStrategyOptions;
 import org.apache.cassandra.db.marshal.UTF8Type;
 import org.apache.cassandra.dht.Murmur3Partitioner;
 import org.apache.cassandra.schema.CachingParams;
@@ -116,6 +117,12 @@ public class AdaptiveControllerTest extends ControllerTest
         options.put(AdaptiveController.MIN_COST, "5");
 
         super.testValidateOptions(options, true);
+    }
+
+    @Test
+    public void testValidateCompactionStrategyOptions()
+    {
+        super.testValidateCompactionStrategyOptions();
     }
 
     @Test
