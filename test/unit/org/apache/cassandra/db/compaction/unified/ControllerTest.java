@@ -16,6 +16,7 @@
 
 package org.apache.cassandra.db.compaction.unified;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +28,7 @@ import org.junit.Ignore;
 
 import org.apache.cassandra.config.DatabaseDescriptor;
 import org.apache.cassandra.db.ColumnFamilyStore;
+import org.apache.cassandra.db.compaction.CompactionStrategyOptions;
 import org.apache.cassandra.db.compaction.UnifiedCompactionStrategy;
 import org.apache.cassandra.locator.AbstractReplicationStrategy;
 import org.apache.cassandra.locator.ReplicationFactor;
@@ -184,5 +186,19 @@ public abstract class ControllerTest
         assertNotNull(controller.getCalculator());
 
         controller.startup(strategy, executorService);
+    }
+
+    void testValidateCompactionStrategyOptions()
+    {
+        Map<String, String> options = new HashMap<>();
+        options.put(CompactionStrategyOptions.TOMBSTONE_THRESHOLD_OPTION, "0");
+        options.put(CompactionStrategyOptions.TOMBSTONE_COMPACTION_INTERVAL_OPTION, "1");
+        options.put(CompactionStrategyOptions.UNCHECKED_TOMBSTONE_COMPACTION_OPTION, "true");
+        options.put(CompactionStrategyOptions.LOG_ALL_OPTION, "true");
+        options.put(CompactionStrategyOptions.PERIODIC_LOG_ALL_OPTION, "all");
+        options.put(CompactionStrategyOptions.LOG_PERIOD_MINUTES_OPTION, "1");
+        options.put(CompactionStrategyOptions.COMPACTION_ENABLED, "true");
+
+        CompactionStrategyOptions.validateOptions(options);
     }
 }
