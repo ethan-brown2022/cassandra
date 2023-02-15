@@ -187,11 +187,6 @@ public abstract class ControllerTest
         controller.startup(strategy, executorService);
     }
 
-    void testFromCompactionStrategyOptions()
-    {
-
-    }
-
     void testValidateCompactionStrategyOptions()
     {
         Map<String, String> options = new HashMap<>();
