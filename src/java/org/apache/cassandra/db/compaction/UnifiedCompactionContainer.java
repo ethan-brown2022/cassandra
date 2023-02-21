@@ -341,7 +341,7 @@ public class UnifiedCompactionContainer implements CompactionStrategyContainer
     }
 
     @Override
-    public void periodicReport()
+    public void periodicReport(@Nullable CompactionStrategyOptions testOptions, @Nullable BackgroundCompactions testBackgroundCompactions)
     {
         logCount++;
         CompactionLogger logger = this.getCompactionLogger();
