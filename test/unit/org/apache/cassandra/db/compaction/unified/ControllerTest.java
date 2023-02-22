@@ -35,6 +35,7 @@ import org.apache.cassandra.locator.ReplicationFactor;
 import org.apache.cassandra.locator.SimpleStrategy;
 import org.apache.cassandra.locator.TokenMetadata;
 import org.apache.cassandra.schema.TableMetadata;
+import org.apache.cassandra.tools.nodetool.Compact;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -64,6 +65,8 @@ public abstract class ControllerTest
     static final String periodicLogAllOption = "all";
     static final int logPeriodMinutesOption = 1;
     static final boolean compactionEnabled = true;
+    static final double readMultiplier = 0.5;
+    static final double writeMultiplier = 1.0;
 
     @Mock
     ColumnFamilyStore cfs;
@@ -205,6 +208,8 @@ public abstract class ControllerTest
         options.put(CompactionStrategyOptions.PERIODIC_LOG_ALL_OPTION, periodicLogAllOption);
         options.put(CompactionStrategyOptions.LOG_PERIOD_MINUTES_OPTION, Integer.toString(logPeriodMinutesOption));
         options.put(CompactionStrategyOptions.COMPACTION_ENABLED, Boolean.toString(compactionEnabled));
+        options.put(CompactionStrategyOptions.READ_MULTIPLIER_OPTION, Double.toString(readMultiplier));
+        options.put(CompactionStrategyOptions.WRITE_MULTIPLIER_OPTION, Double.toString(writeMultiplier));
 
         CompactionStrategyOptions compactionStrategyOptions = new CompactionStrategyOptions(UnifiedCompactionStrategy.class, options, true);
         assertNotNull(compactionStrategyOptions);
@@ -215,6 +220,8 @@ public abstract class ControllerTest
         assertEquals((logAllOption || periodicLogAllOption.equals("all") || periodicLogAllOption.equals("events_only")), compactionStrategyOptions.isLogEnabled());
         assertEquals(periodicLogAllOption.equals("all"), compactionStrategyOptions.isLogAll());
         assertEquals(logPeriodMinutesOption, compactionStrategyOptions.getLogPeriodMinutes());
+        assertEquals(readMultiplier, compactionStrategyOptions.getReadMultiplier(), epsilon);
+        assertEquals(writeMultiplier, compactionStrategyOptions.getWriteMultiplier(), epsilon);
 
         Map<String, String> uncheckedOptions = CompactionStrategyOptions.validateOptions(options);
         assertNotNull(uncheckedOptions);
