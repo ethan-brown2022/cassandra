@@ -119,6 +119,12 @@ public class AdaptiveControllerTest extends ControllerTest
     }
 
     @Test
+    public void testValidateCompactionStrategyOptions()
+    {
+        super.testValidateCompactionStrategyOptions();
+    }
+
+    @Test
     public void testStartShutdown()
     {
         AdaptiveController controller = makeController();

@@ -33,6 +33,7 @@ import com.google.common.collect.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.beust.jcommander.internal.Nullable;
 import org.apache.cassandra.db.Directories;
 import org.apache.cassandra.db.SerializationHeader;
 import org.apache.cassandra.db.commitlog.CommitLogPosition;
@@ -378,15 +379,29 @@ abstract class AbstractCompactionStrategy implements CompactionStrategy
         return true;
     }
 
-    public void periodicReport(){
+    public void periodicReport(@Nullable CompactionStrategyOptions testOptions, @Nullable BackgroundCompactions testBackgroungCompactions){
         logCount++;
         CompactionLogger logger = this.getCompactionLogger();
-        int interval = options.getLogPeriodMinutes();
-        boolean logAll = options.isLogAll();
-        if (logger != null && logger.enabled() && logAll && logCount % interval == 0)
+        if (options == null || backgroundCompactions == null)
         {
-            logCount = 0;
-            logger.statistics(this, "periodic", backgroundCompactions.getStatistics(this));
+            int interval = testOptions.getLogPeriodMinutes();
+            boolean logAll = testOptions.isLogAll();
+            if (logger != null && logger.enabled() && logAll && logCount % interval == 0)
+            {
+                logCount = 0;
+                logger.statistics(this, "periodic", testBackgroungCompactions.getStatistics(this));
+            }
         }
+        else
+        {
+            int interval = options.getLogPeriodMinutes();
+            boolean logAll = options.isLogAll();
+            if (logger != null && logger.enabled() && logAll && logCount % interval == 0)
+            {
+                logCount = 0;
+                logger.statistics(this, "periodic", backgroundCompactions.getStatistics(this));
+            }
+        }
+
     }
 }
