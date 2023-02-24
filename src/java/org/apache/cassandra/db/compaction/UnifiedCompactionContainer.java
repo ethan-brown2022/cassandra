@@ -344,19 +344,9 @@ public class UnifiedCompactionContainer implements CompactionStrategyContainer
     }
 
     @Override
-    public void periodicReport(@Nullable CompactionStrategyOptions testOptions, @Nullable BackgroundCompactions testBackgroundCompactions)
+    public void periodicReport()
     {
-        logCount++;
-        CompactionLogger logger = this.getCompactionLogger();
-        BackgroundCompactions backgroundCompactions = getBackgroundCompactions();
-        int interval = strategy.options.getLogPeriodMinutes();
-        boolean logAll = strategy.options.isLogAll();
-        if (logger != null && logger.enabled() && logAll && logCount % interval == 0)
-        {
-            logCount = 0;
-            logger.statistics(this, "periodic", backgroundCompactions.getStatistics(this));
-        }
-
+        strategy.periodicReport();
     }
 
     BackgroundCompactions getBackgroundCompactions()

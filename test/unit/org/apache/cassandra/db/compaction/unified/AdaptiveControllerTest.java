@@ -117,7 +117,7 @@ public class AdaptiveControllerTest extends ControllerTest
     @Test
     public void testValidateCompactionStrategyOptions()
     {
-        super.testValidateCompactionStrategyOptions();
+        super.testValidateCompactionStrategyOptions(true);
     }
 
     @Test

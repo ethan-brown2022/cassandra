@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import com.beust.jcommander.internal.Nullable;
 import org.apache.cassandra.db.SerializationHeader;
 import org.apache.cassandra.db.commitlog.CommitLogPosition;
 import org.apache.cassandra.db.commitlog.IntervalSet;
@@ -200,5 +199,5 @@ public interface CompactionStrategy extends CompactionObserver
         return true;
     }
 
-    public void periodicReport(@Nullable CompactionStrategyOptions testOptions, @Nullable BackgroundCompactions testBackgroundCompactions);
+    void periodicReport();
 }

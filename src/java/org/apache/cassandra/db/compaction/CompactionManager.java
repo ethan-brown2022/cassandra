@@ -172,7 +172,7 @@ public class CompactionManager implements CompactionManagerMBean
                 for ( ColumnFamilyStore cfs : Schema.instance.getKeyspaceInstance(keyspace).getColumnFamilyStores())
                 {
                     CompactionStrategy strat = cfs.getCompactionStrategy();
-                    strat.periodicReport(null, null);
+                    strat.periodicReport();
                 }
             }
         }, 1, 1, TimeUnit.MINUTES);

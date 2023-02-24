@@ -61,7 +61,7 @@ public abstract class ControllerTest
     static final long tombstoneCompactionIntervalOption = 1;
     static final boolean uncheckedTombstoneCompactionOption = true;
     static final boolean logAllOption = true;
-    static final String periodicLogAllOption = "all";
+    static final String logTypeOption = "all";
     static final int logPeriodMinutesOption = 1;
     static final boolean compactionEnabled = true;
 
@@ -195,14 +195,18 @@ public abstract class ControllerTest
         controller.startup(strategy, executorService);
     }
 
-    void testValidateCompactionStrategyOptions()
+    void testValidateCompactionStrategyOptions(boolean testLogType)
     {
         Map<String, String> options = new HashMap<>();
         options.put(CompactionStrategyOptions.TOMBSTONE_THRESHOLD_OPTION, Float.toString(tombstoneThresholdOption));
         options.put(CompactionStrategyOptions.TOMBSTONE_COMPACTION_INTERVAL_OPTION, Long.toString(tombstoneCompactionIntervalOption));
         options.put(CompactionStrategyOptions.UNCHECKED_TOMBSTONE_COMPACTION_OPTION, Boolean.toString(uncheckedTombstoneCompactionOption));
-        options.put(CompactionStrategyOptions.LOG_ALL_OPTION, Boolean.toString(logAllOption));
-        options.put(CompactionStrategyOptions.PERIODIC_LOG_ALL_OPTION, periodicLogAllOption);
+
+        if (testLogType)
+            options.put(CompactionStrategyOptions.LOG_TYPE_OPTION, logTypeOption);
+        else
+            options.put(CompactionStrategyOptions.LOG_ALL_OPTION, Boolean.toString(logAllOption));
+
         options.put(CompactionStrategyOptions.LOG_PERIOD_MINUTES_OPTION, Integer.toString(logPeriodMinutesOption));
         options.put(CompactionStrategyOptions.COMPACTION_ENABLED, Boolean.toString(compactionEnabled));
 
@@ -212,8 +216,17 @@ public abstract class ControllerTest
         assertEquals(tombstoneThresholdOption, compactionStrategyOptions.getTombstoneThreshold(), epsilon);
         assertEquals(tombstoneCompactionIntervalOption, compactionStrategyOptions.getTombstoneCompactionInterval());
         assertEquals(uncheckedTombstoneCompactionOption, compactionStrategyOptions.isUncheckedTombstoneCompaction());
-        assertEquals((logAllOption || periodicLogAllOption.equals("all") || periodicLogAllOption.equals("events_only")), compactionStrategyOptions.isLogEnabled());
-        assertEquals(periodicLogAllOption.equals("all"), compactionStrategyOptions.isLogAll());
+
+        if (testLogType)
+        {
+            assertEquals((logTypeOption.equals("all") || logTypeOption.equals("events_only")), compactionStrategyOptions.isLogEnabled());
+            assertEquals(logTypeOption.equals("all"), compactionStrategyOptions.isLogAll());
+        }
+        else
+        {
+            assertEquals(logAllOption, compactionStrategyOptions.isLogEnabled());
+            assertEquals(logAllOption, compactionStrategyOptions.isLogAll());
+        }
         assertEquals(logPeriodMinutesOption, compactionStrategyOptions.getLogPeriodMinutes());
 
         Map<String, String> uncheckedOptions = CompactionStrategyOptions.validateOptions(options);

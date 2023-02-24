@@ -68,7 +68,7 @@ public class StaticControllerTest extends ControllerTest
     @Test
     public void testValidateCompactionStrategyOptions()
     {
-        super.testValidateCompactionStrategyOptions();
+        super.testValidateCompactionStrategyOptions(true);
     }
 
     @Test

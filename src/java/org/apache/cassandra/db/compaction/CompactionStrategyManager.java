@@ -1108,17 +1108,11 @@ public class CompactionStrategyManager implements CompactionStrategyContainer
     }
 
     @Override
-    public void periodicReport(@Nullable CompactionStrategyOptions testOptions, @Nullable BackgroundCompactions testBackgroundCompactions)
+    public void periodicReport()
     {
-        logCount++;
-        CompactionLogger logger = this.getCompactionLogger();
-        BackgroundCompactions backgroundCompactions = new BackgroundCompactions(realm);
-        int interval = repaired.first().getOptions().getLogPeriodMinutes();
-        boolean logAll = repaired.first().getOptions().isLogAll();
-        if (logger != null && logger.enabled() && logAll && logCount % interval == 0)
+        for (CompactionStrategy strat : getAllStrategies())
         {
-            logCount = 0;
-            logger.statistics(this, "periodic", backgroundCompactions.getStatistics(this));
+            strat.periodicReport();
         }
     }
 

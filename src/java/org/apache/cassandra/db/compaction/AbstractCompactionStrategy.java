@@ -33,7 +33,6 @@ import com.google.common.collect.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beust.jcommander.internal.Nullable;
 import org.apache.cassandra.db.Directories;
 import org.apache.cassandra.db.SerializationHeader;
 import org.apache.cassandra.db.commitlog.CommitLogPosition;
@@ -311,6 +310,11 @@ abstract class AbstractCompactionStrategy implements CompactionStrategy
         return getClass().getSimpleName();
     }
 
+    protected BackgroundCompactions getBackgroundCompactions()
+    {
+        return backgroundCompactions;
+    }
+
     public static Map<String, String> validateOptions(Map<String, String> options) throws ConfigurationException
     {
         return CompactionStrategyOptions.validateOptions(options);
@@ -379,29 +383,18 @@ abstract class AbstractCompactionStrategy implements CompactionStrategy
         return true;
     }
 
-    public void periodicReport(@Nullable CompactionStrategyOptions testOptions, @Nullable BackgroundCompactions testBackgroungCompactions){
+    public void periodicReport()
+    {
         logCount++;
         CompactionLogger logger = this.getCompactionLogger();
-        if (options == null || backgroundCompactions == null)
+        CompactionStrategyOptions options = this.getOptions();
+        BackgroundCompactions backgroundCompactions = this.getBackgroundCompactions();
+        int interval = options.getLogPeriodMinutes();
+        boolean logAll = options.isLogAll();
+        if (logger != null && logger.enabled() && logAll && logCount % interval == 0)
         {
-            int interval = testOptions.getLogPeriodMinutes();
-            boolean logAll = testOptions.isLogAll();
-            if (logger != null && logger.enabled() && logAll && logCount % interval == 0)
-            {
-                logCount = 0;
-                logger.statistics(this, "periodic", testBackgroungCompactions.getStatistics(this));
-            }
+            logCount = 0;
+            logger.statistics(this, "periodic", backgroundCompactions.getStatistics(this));
         }
-        else
-        {
-            int interval = options.getLogPeriodMinutes();
-            boolean logAll = options.isLogAll();
-            if (logger != null && logger.enabled() && logAll && logCount % interval == 0)
-            {
-                logCount = 0;
-                logger.statistics(this, "periodic", backgroundCompactions.getStatistics(this));
-            }
-        }
-
     }
 }

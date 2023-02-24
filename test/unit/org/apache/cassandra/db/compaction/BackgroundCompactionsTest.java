@@ -452,13 +452,15 @@ public class BackgroundCompactionsTest
         UnifiedCompactionStrategy ucs = mock(UnifiedCompactionStrategy.class);
         CompactionStrategyStatistics stats = mock(CompactionStrategyStatistics.class);
 
+        when(ucs.getOptions()).thenReturn(options);
+        when(ucs.getBackgroundCompactions()).thenReturn(backgroundCompactions);
         when(options.isLogAll()).thenReturn(true);
         when(options.getLogPeriodMinutes()).thenReturn(1);
         when(backgroundCompactions.getStatistics(ucs)).thenReturn(stats);
         when(ucs.getCompactionLogger()).thenReturn(compactionLogger);
-        doCallRealMethod().when(ucs).periodicReport(options, backgroundCompactions);
+        doCallRealMethod().when(ucs).periodicReport();
 
-        ucs.periodicReport(options, backgroundCompactions);
+        ucs.periodicReport();
         Mockito.verify(compactionLogger, times(1)).statistics(eq(ucs), eq("periodic"), any(CompactionStrategyStatistics.class));
     }
 }
