@@ -166,16 +166,7 @@ public class CompactionManager implements CompactionManagerMBean
         MBeanWrapper.instance.registerMBean(instance, MBEAN_OBJECT_NAME);
 
         /*Schedule periodic reports to run every minute*/
-        ScheduledExecutors.scheduledTasks.scheduleAtFixedRate(() -> {
-            for (String keyspace : Schema.instance.getKeyspaces())
-            {
-                for ( ColumnFamilyStore cfs : Schema.instance.getKeyspaceInstance(keyspace).getColumnFamilyStores())
-                {
-                    CompactionStrategy strat = cfs.getCompactionStrategy();
-                    strat.periodicReport();
-                }
-            }
-        }, 1, 1, TimeUnit.MINUTES);
+        ScheduledExecutors.scheduledTasks.scheduleAtFixedRate(() -> periodicReports(), 1, 1, TimeUnit.MINUTES);
     }
 
     private final CompactionExecutor executor = new CompactionExecutor();
@@ -193,6 +184,18 @@ public class CompactionManager implements CompactionManagerMBean
     private final AtomicInteger globalCompactionPauseCount = new AtomicInteger(0);
 
     private final RateLimiter compactionRateLimiter = RateLimiter.create(Double.MAX_VALUE);
+
+    protected static void periodicReports()
+    {
+        for (String keyspace : Schema.instance.getKeyspaces())
+        {
+            for ( ColumnFamilyStore cfs : Schema.instance.getKeyspaceInstance(keyspace).getColumnFamilyStores())
+            {
+                CompactionStrategy strat = cfs.getCompactionStrategy();
+                strat.periodicReport();
+            }
+        }
+    }
 
     public CompactionMetrics getMetrics()
     {
