@@ -91,7 +91,6 @@ import static org.apache.cassandra.db.compaction.AbstractStrategyHolder.GroupedS
 public class CompactionStrategyManager implements CompactionStrategyContainer
 {
     private static final Logger logger = LoggerFactory.getLogger(CompactionStrategyManager.class);
-    private static int logCount = 0;
     public final CompactionLogger compactionLogger;
     private final CompactionRealm realm;
     private final boolean partitionSSTablesByTokenRange;

@@ -166,7 +166,7 @@ public class CompactionManager implements CompactionManagerMBean
         MBeanWrapper.instance.registerMBean(instance, MBEAN_OBJECT_NAME);
 
         /*Schedule periodic reports to run every minute*/
-        ScheduledExecutors.scheduledTasks.scheduleAtFixedRate(() -> periodicReports(), 1, 1, TimeUnit.MINUTES);
+        ScheduledExecutors.scheduledTasks.scheduleAtFixedRate(CompactionManager::periodicReports, 1, 1, TimeUnit.MINUTES);
     }
 
     private final CompactionExecutor executor = new CompactionExecutor();

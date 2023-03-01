@@ -55,7 +55,6 @@ public class CompactionStrategyOptions
     // minimum interval needed to perform tombstone removal compaction in seconds, default 86400 or 1 day.
     public static final String DEFAULT_TOMBSTONE_COMPACTION_INTERVAL = "86400";
     public static final String DEFAULT_UNCHECKED_TOMBSTONE_COMPACTION_OPTION = "false";
-    public static final String DEFAULT_LOG_ALL_OPTION = System.getProperty("default.compaction.logs", "false");
     public static final String DEFAULT_LOG_TYPE_OPTION = System.getProperty("default.compaction.logs", "none");
     public static final String DEFAULT_LOG_PERIOD_MINUTES_OPTION = System.getProperty("default.compaction.log_minutes", "1");
 
@@ -74,7 +73,6 @@ public class CompactionStrategyOptions
     private final long tombstoneCompactionInterval;
     private final boolean uncheckedTombstoneCompaction;
     private boolean disableTombstoneCompactions = false;
-    private final boolean logAll;
     public enum LogType
     {
         NONE, EVENTS_ONLY, ALL;
@@ -110,8 +108,15 @@ public class CompactionStrategyOptions
         tombstoneThreshold = Float.parseFloat(getOption(TOMBSTONE_THRESHOLD_OPTION, useDefault, DEFAULT_TOMBSTONE_THRESHOLD));
         tombstoneCompactionInterval = Long.parseLong(getOption(TOMBSTONE_COMPACTION_INTERVAL_OPTION, useDefault, DEFAULT_TOMBSTONE_COMPACTION_INTERVAL));
         uncheckedTombstoneCompaction = Boolean.parseBoolean(getOption(UNCHECKED_TOMBSTONE_COMPACTION_OPTION, useDefault, DEFAULT_UNCHECKED_TOMBSTONE_COMPACTION_OPTION));
-        logAll = Boolean.parseBoolean(getOption(LOG_ALL_OPTION, useDefault, DEFAULT_LOG_ALL_OPTION));
-        logType = LogType.valueOf(getOption(LOG_TYPE_OPTION, useDefault, DEFAULT_LOG_TYPE_OPTION).toUpperCase());
+        if (options.containsKey(LOG_ALL_OPTION))
+        {
+            if (options.get(LOG_ALL_OPTION).equalsIgnoreCase("true"))
+                logType = LogType.ALL;
+            else
+                logType = LogType.NONE;
+        }
+        else
+            logType = LogType.valueOf(getOption(LOG_TYPE_OPTION, useDefault, DEFAULT_LOG_TYPE_OPTION).toUpperCase());
         logPeriodMinutes = Integer.parseInt(getOption(LOG_PERIOD_MINUTES_OPTION, useDefault, DEFAULT_LOG_PERIOD_MINUTES_OPTION));
     }
 
@@ -423,14 +428,12 @@ public class CompactionStrategyOptions
 
     public boolean isLogEnabled()
     {
-        if (logAll || logType == LogType.ALL || logType == LogType.EVENTS_ONLY)
-            return true;
-        return false;
+        return (logType == LogType.ALL || logType == LogType.EVENTS_ONLY);
     }
 
     public boolean isLogAll()
     {
-        return (logAll || logType == LogType.ALL);
+        return (logType == LogType.ALL);
     }
 
     public int getLogPeriodMinutes()

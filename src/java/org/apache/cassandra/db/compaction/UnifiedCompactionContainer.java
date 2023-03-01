@@ -44,7 +44,6 @@ import org.apache.cassandra.schema.CompactionParams;
 
 public class UnifiedCompactionContainer implements CompactionStrategyContainer
 {
-    private static int logCount = 0;
     private final CompactionStrategyFactory factory;
     private final CompactionParams params;
     private final CompactionParams metadataParams;
