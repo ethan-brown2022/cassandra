@@ -45,6 +45,7 @@ public class StaticControllerTest extends ControllerTest
         Map<String, String> options = new HashMap<>();
         String wStr = Arrays.stream(Ws).mapToObj(Integer::toString).collect(Collectors.joining(","));
         options.put(StaticController.STATIC_SCALING_PARAMETERS_OPTION, wStr);
+        //options.put(StaticController.STATIC_SCALING_FACTORS_OPTION, wStr);
 
         Controller controller = testFromOptions(false, options);
         assertTrue(controller instanceof StaticController);
@@ -61,6 +62,7 @@ public class StaticControllerTest extends ControllerTest
         Map<String, String> options = new HashMap<>();
         String wStr = Arrays.stream(Ws).mapToObj(Integer::toString).collect(Collectors.joining(","));
         options.put(StaticController.STATIC_SCALING_PARAMETERS_OPTION, wStr);
+        //options.put(StaticController.STATIC_SCALING_FACTORS_OPTION, wStr);
 
         super.testValidateOptions(options, false);
     }
