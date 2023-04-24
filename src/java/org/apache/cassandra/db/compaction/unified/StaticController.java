@@ -35,8 +35,8 @@ public class StaticController extends Controller
      * The scaling parameters W, one per bucket index and separated by a comma.
      * Higher indexes will use the value of the last index with a W specified.
      */
-    final static String STATIC_SCALING_PARAMETERS_OPTION = "static_scaling_parameters";
-    final static String STATIC_SCALING_FACTORS_OPTION = "static_scaling_factors";
+    static final String STATIC_SCALING_PARAMETERS_OPTION = "static_scaling_parameters";
+    static final String STATIC_SCALING_FACTORS_OPTION = "static_scaling_factors";
     private final static String DEFAULT_STATIC_SCALING_PARAMETERS = System.getProperty(PREFIX + STATIC_SCALING_PARAMETERS_OPTION, "2");
 
     private final int[] scalingParameters;
